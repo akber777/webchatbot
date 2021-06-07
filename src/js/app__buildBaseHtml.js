@@ -37,7 +37,7 @@ const html = `
   <form>
     <div class="app__formBox">
       <p>
-        <input type="file" style="display: none" />
+        <input class="fileInput" type="file" />
         <svg
           width="24"
           height="24"

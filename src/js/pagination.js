@@ -35,7 +35,7 @@ document.querySelector(".app__content").onscroll = function () {
                 // Botdan gelen  Message = ConversationSid
 
                 if (JSON.parse(item.body).type == "text") {
-                  webchat.prependCore(
+                  webchat.prependHtml(
                     document.querySelector(".app__content"),
                     `
                       <div class="app__content--msg bot">
@@ -47,9 +47,58 @@ document.querySelector(".app__content").onscroll = function () {
                   );
                 }
 
+                // rangeSlider
+                else if (JSON.parse(item.body).type == "rangeSlider") {
+                  webchat.prependHtml(
+                    chatContentBox,
+                    `
+                    <div  class="app__content--msg bot multipleSelection app__rangeSlider">
+                      <div class='in'>
+                        <div class="app__multipleTitle">
+                          ${JSON.parse(item.body).body.text}
+                        </div>
+                        <div class="app__multipleItems">
+                        <input type="text" class="js-range-slider" name="my_range" value=""
+                            data-type="double"
+                            data-values=${JSON.parse(item.body).body.values}
+                            data-grid="true"
+                            data-prefix="$"
+                        />
+                        </div>
+                      </div>
+
+                    </div>
+                    `
+                  );
+
+                  let step;
+
+                  $(".js-range-slider").ionRangeSlider({
+                    skin: "round",
+                    min: JSON.parse(item.body).body.values[0],
+                    max: JSON.parse(item.body).body.values[
+                      JSON.parse(item.body).body.values.length - 1
+                    ],
+                    from: 0,
+                    onStart: function (data) {
+                      step = [data.from_value, data.to_value];
+                    },
+                    onFinish: function (data) {
+                      step = [data.from_value, data.to_value];
+                    },
+                  });
+
+                  $(".confirmBtnRange").on("click", function () {
+                    let rangeVal = `$${step[0]} - $${step[1]}`;
+                    conversation.sendMessage(rangeVal);
+
+                    $(".app__rangeSlider").addClass("disabledMutliSelection");
+                  });
+                }
+
                 // image
                 else if (JSON.parse(item.body).type == "image") {
-                  webchat.appendHtml(
+                  webchat.prependHtml(
                     chatContentBox,
                     `
                           <div class='app__sliderBox app__imageContainer'>
@@ -83,7 +132,7 @@ document.querySelector(".app__content").onscroll = function () {
 
                 // video
                 else if (JSON.parse(item.body).type == "video") {
-                  webchat.appendHtml(
+                  webchat.prependHtml(
                     chatContentBox,
                     `
                         <div class='app__sliderBox app__videoBox'>
@@ -122,7 +171,7 @@ document.querySelector(".app__content").onscroll = function () {
 
                 // multiple selection
                 else if (JSON.parse(item.body).type == "multipleSelection") {
-                  webchat.prependCore(
+                  webchat.prependHtml(
                     chatContentBox,
                     `
                     <div  class="app__content--msg bot multipleSelection">
@@ -174,7 +223,7 @@ document.querySelector(".app__content").onscroll = function () {
                     }
                   });
                 } else if (JSON.parse(item.body).type == "carousel") {
-                  webchat.prependCore(
+                  webchat.prependHtml(
                     chatContentBox,
                     `<div class="app__content--msg bot carouselChat">
                       <div class='in'>
@@ -246,106 +295,28 @@ document.querySelector(".app__content").onscroll = function () {
                       }
                     );
                   });
-                }
-
-                // text and buttons
-                else if (JSON.parse(item.body).type == "textAndButtons") {
-                  webchat.prependCore(
+                } else if (JSON.parse(item.body).type == "phone") {
+                  webchat.prependHtml(
                     chatContentBox,
                     `
-                      <div class="app__content--msg bot">
-                        <div class='in'>
-                        <div class="app__content--buttons">
-                          <p>${JSON.parse(item.body).body.text}</p>
-                        </div>
-                        </div>
-                      </div>
-                `
-                  );
-
-                  JSON.parse(item.body).body.buttons.forEach((item, index) =>
-                    webchat.prependCore(
-                      chatContentBox,
-                      `<div class="app__content--msg bot buttons">
-                      <div class="in">
-                     ${
-                       item.length !== undefined
-                         ? item
-                             .map(
-                               (btn) =>
-                                 `<button class='btnChat'>${btn.text}</button>`
-                             )
-                             .join("")
-                         : ``
-                     }
-                      </div>
-                    </div>`
-                    )
-                  );
-
-                  $(".btnChat").on("click", function () {
-                    conversation.sendMessage($(this).text(), { type: "btn" });
-                  });
-                } else if (JSON.parse(item.body).type == "phone") {
-                  webchat.prependCore(
-                    document.querySelector(".app__content"),
-                    `
-                    <div class="app__content--msg bot tel">
+                    <div class="app__content--msg bot">
                     <div class='in'>
-                      <div class='app__content--msg__input'>
-                        <span class='telPlaceHoldder'>Type your number</span>
-                        <input type='text' class='app__telInput' />
-                        <button class='sendInpValue'>
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path fill-rule="evenodd" clip-rule="evenodd" d="M12.2929 6.29289C11.9024 6.68342 11.9024 7.31658 12.2929 7.70711L15.5858 11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H15.5858L12.2929 16.2929C11.9024 16.6834 11.9024 17.3166 12.2929 17.7071C12.6834 18.0976 13.3166 18.0976 13.7071 17.7071L18.7065 12.7077C18.7067 12.7075 18.7069 12.7073 18.7071 12.7071C18.7432 12.6816 18.7749 12.644 18.8021 12.5973C18.9264 12.4306 19 12.2239 19 12C19 11.7761 18.9264 11.5694 18.8021 11.4027C18.7749 11.356 18.7432 11.3184 18.7071 11.2929C18.7069 11.2927 18.7067 11.2925 18.7065 11.2923L13.7071 6.29289C13.3166 5.90237 12.6834 5.90237 12.2929 6.29289Z" fill="#1089FF"/>
-                          </svg>                    
-                        </button>
-                      </div>
+                    <div class="app__content--buttons">
+                       <p>${JSON.parse(item.body).body.text}</p>
                     </div>
                     </div>
-                  `
+                    </div>
+                    `
                   );
-
-                  $(".telPlaceHoldder").on("click", function () {
-                    $(this).toggleClass("animateTel");
-                  });
-
-                  $(".app__telInput").keypress(function (e) {
-                    $(this).keyup(function (e) {
-                      if ($(this).val() !== "") {
-                        $(".app__btnBox").hide();
-                      } else {
-                        $(".app__btnBox").show();
-                      }
-                    });
-
-                    if (
-                      e.which != 8 &&
-                      e.which != 0 &&
-                      (e.which < 48 || e.which > 57)
-                    ) {
-                      return false;
-                    }
-                  });
-
-                  $(".sendInpValue").on("click", function () {
-                    if ($(this).prev().val() !== "") {
-                      conversation.sendMessage($(this).prev().val());
-
-                      $(this).prev().val("");
-
-                      $(".app__btnBox").show();
-                    }
-                  });
                 }
 
                 if (JSON.parse(item.body).type == "textAndButtons") {
-                  webchat.prependCore(
+                  webchat.prependHtml(
                     document.querySelector(".app__content"),
                     `
                         <div class="app__content--msg bot">
                         <div class='in'>
-                        ${JSON.parse(item.body).body.text}
+                         ${JSON.parse(item.body).body.text}
                         </div>
                         </div>
                     `
@@ -353,7 +324,7 @@ document.querySelector(".app__content").onscroll = function () {
                 }
               } else if (item.author === chatParams.userIdentity) {
                 if (item.attributes.type == "button") {
-                  webchat.prependCore(
+                  webchat.prependHtml(
                     chatContentBox,
                     `
                   <div class="app__content--msg user newMessages">
@@ -364,7 +335,7 @@ document.querySelector(".app__content").onscroll = function () {
                 `
                   );
                 } else {
-                  webchat.prependCore(
+                  webchat.prependHtml(
                     chatContentBox,
                     `
                   <div class="app__content--msg user newMessages">
@@ -376,7 +347,7 @@ document.querySelector(".app__content").onscroll = function () {
                   );
                 }
               } else {
-                webchat.prependCore(
+                webchat.prependHtml(
                   document.querySelector(".app__content"),
                   `
                     <div class="app__content--msg bot">
@@ -388,6 +359,15 @@ document.querySelector(".app__content").onscroll = function () {
                 );
               }
             });
+
+            if (loading === false) {
+              $(".app__content").animate(
+                {
+                  scrollTop: 100,
+                },
+                "fast"
+              );
+            }
           }
         }
       });

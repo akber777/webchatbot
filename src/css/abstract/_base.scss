@@ -14,3 +14,70 @@
   top: 120px;
   left: -2px;
 }
+
+.sendBtn {
+  cursor: pointer;
+}
+
+.disabledMutliSelection {
+  label {
+    color: #8a94a6 !important;
+  }
+
+  .rangeIn {
+    display: none;
+  }
+
+  .buttons {
+    display: none;
+  }
+
+  .app__multipleConfirm {
+    display: none;
+  }
+}
+
+.disabledMulti {
+  label {
+    color: #8a94a6 !important;
+  }
+
+  .rangeIn {
+    display: none;
+  }
+
+  .buttons {
+    display: none;
+  }
+
+  .app__multipleConfirm {
+    display: none;
+  }
+}
+
+.textAndButtons {
+  .buttons {
+    .in {
+      background-color: transparent !important;
+    }
+
+    .btnChat {
+      border: 1px solid #d6d4d4 !important;
+
+      &:hover {
+        transition: all 0.2s;
+        border: 1px solid #0b6ac8 !important ;
+        color: #0b6ac8;
+      }
+    }
+  }
+}
+
+.fileInput {
+  position: absolute;
+  left: 0;
+  opacity: 0;
+  width: 21px !important;
+  cursor: pointer;
+  z-index: 5;
+}
