@@ -18,6 +18,8 @@ let loadingBtn = false;
 
 let chatParams;
 
+let awaitMedia;
+
 function startChat(chatData) {
   if (localStorage.getItem("chatParams") == null) {
     chatParams = chatData;
@@ -61,6 +63,41 @@ function startChat(chatData) {
                 </div>
               `
                   );
+                }
+
+                // like
+                else if (JSON.parse(item.body).type == "like") {
+                  webchat.appendHtml(
+                    chatContentBox,
+                    `
+                      <div  class="app__content--msg bot multipleSelection app__Like">
+                        <div class='in'>
+                          <div class="app__multipleTitle">
+                            ${JSON.parse(item.body).body.text}
+                          </div>
+                          <div class="app__multipleItems ">
+                          <button class='likeBtnxk'>
+                          👍                        
+                          </button>
+                          <button class='unlikeBtnxk'>
+                          👎                         
+                          </button>
+                          </div>
+                        </div>
+                      </div>
+                      `
+                  );
+
+                  $(".likeBtnxk").on("click", function () {
+                    conversation.sendMessage("true", { hiddenLike: true });
+                    $(this).parents(".app__Like").find("button").hide();
+                  });
+
+                  $(".unlikeBtnxk").on("click", function () {
+                    conversation.sendMessage("false", { hiddenLike: true });
+
+                    $(this).parents(".app__Like").find("button").hide();
+                  });
                 }
 
                 // rangeSlider
@@ -191,6 +228,8 @@ function startChat(chatData) {
                 }
                 // multiple selection
                 else if (JSON.parse(item.body).type == "multipleSelection") {
+                  multipleSelection = [];
+
                   webchat.appendHtml(
                     chatContentBox,
                     `
@@ -334,9 +373,13 @@ function startChat(chatData) {
                     `
                     <div class="app__content--msg bot textAndButtons">
                       <div class='in'>
-                      <div class="app__content--buttons">
+                      ${
+                        JSON.parse(item.body).body.text
+                          ? `<div class="app__content--buttons">
                         <p>${JSON.parse(item.body).body.text}</p>
-                      </div>
+                      </div>`
+                          : ""
+                      }
                       ${JSON.parse(item.body)
                         .body.buttons.map(
                           (item, index) =>
@@ -366,7 +409,7 @@ function startChat(chatData) {
                       type: "btn",
                     });
 
-                    btnClick = true;
+                    $(this).parents(".textAndButtons").hide();
                   });
                 }
 
@@ -386,30 +429,78 @@ function startChat(chatData) {
                   );
                 }
               } else if (item.author === chatParams.userIdentity) {
-                if (item.attributes.type == "button") {
+                // media
+                if (item.type == "media") {
                   webchat.appendHtml(
                     chatContentBox,
                     `
-                  <div class="app__content--msg user newMessages">
+                  <div class="app__content--msg voiceMsgUser user">
                   <div class='in'>
-                    ${item.attributes.text}
+                    <div id=${item.sid}>
+                   
                     </div>
                   </div>
+                  </div>
                 `
+                  );
+
+                  item.media.getContentTemporaryUrl().then((data) => {
+                    $(`#${item.sid}`).html(`
+                        <div id=${item.sid + "app"} class='audioAppBoxBot'>
+                          <audio>
+                              <source src=${data} type="audio/wav">
+                          </audio>
+                        </div>
+                      `);
+
+                    new GreenAudioPlayer("#" + item.sid + "app");
+
+                    chatContentBox.scrollTo({
+                      behavior: "smooth",
+                      top: chatContentBox.scrollHeight,
+                    });
+                  });
+                }
+                // btn
+                else if (item.attributes.type == "button") {
+                  webchat.appendHtml(
+                    chatContentBox,
+                    `
+                    <div class="app__content--msg user newMessages">
+                    <div class='in'>
+                      ${item.attributes.text}
+                      </div>
+                    </div>
+                  `
                   );
                 } else {
-                  webchat.appendHtml(
-                    chatContentBox,
-                    `
-                  <div class="app__content--msg user newMessages">
-                  <div class='in'>
-                    ${item.body}
+                  if (item.attributes.hiddenLike != true) {
+                    webchat.appendHtml(
+                      chatContentBox,
+                      `
+                    <div class="app__content--msg user newMessages">
+                    <div class='in'>
+                      ${item.body}
+                      </div>
                     </div>
-                  </div>
-                `
-                  );
+                  `
+                    );
+                  } else {
+                    webchat.appendHtml(
+                      chatContentBox,
+                      `
+                    <div class="app__content--msg user newMessages">
+                    <div class='in'>
+                    ${item.attributes.btn}
+                      </div>
+                    </div>
+                  `
+                    );
+                  }
                 }
-              } else {
+              }
+              // live chat
+              else {
                 webchat.appendHtml(
                   chatContentBox,
                   `
@@ -470,6 +561,46 @@ function startChat(chatData) {
                 );
               }
 
+              // like
+              else if (JSON.parse(item.body).type == "like") {
+                webchat.appendHtml(
+                  chatContentBox,
+                  `
+                    <div  class="app__content--msg bot multipleSelection app__Like">
+                      <div class='in'>
+                        <div class="app__multipleTitle">
+                          ${JSON.parse(item.body).body.text}
+                        </div>
+                        <div class="app__multipleItems ">
+                        <button class='likeBtnxk'>
+                        👍                         
+                        </button>
+                        <button class='unlikeBtnxk'>
+                        👎                        
+                        </button>
+                        </div>
+                      </div>
+                    </div>
+                    `
+                );
+
+                $(".likeBtnxk").on("click", function () {
+                  conversation.sendMessage("true", {
+                    hiddenLike: true,
+                    btn: "👍",
+                  });
+                  $(this).parents(".app__Like").find("button").hide();
+                });
+
+                $(".unlikeBtnxk").on("click", function () {
+                  conversation.sendMessage("false", {
+                    hiddenLike: true,
+                    btn: "👎",
+                  });
+
+                  $(this).parents(".app__Like").find("button").hide();
+                });
+              }
               // rangeSlider
               else if (JSON.parse(item.body).type == "rangeSlider") {
                 webchat.appendHtml(
@@ -599,6 +730,7 @@ function startChat(chatData) {
 
               // multiple selection
               else if (JSON.parse(item.body).type == "multipleSelection") {
+                multipleSelection = [];
                 webchat.appendHtml(
                   chatContentBox,
                   `
@@ -621,7 +753,7 @@ function startChat(chatData) {
                       </div>
                       <div class="app__multipleConfirm">
                             <button>
-                              Confirm
+                            ${JSON.parse(item.body).body.buttonText}
                             </button>
                       </div>
                     </div>
@@ -654,10 +786,6 @@ function startChat(chatData) {
                     conversation.sendMessage(multipleSelection.toString(), {
                       checked: multipleCheckedId,
                     });
-
-                    $(this)
-                      .parents(".multipleSelection")
-                      .addClass("disabledMulti");
                   }
                 });
               }
@@ -742,9 +870,13 @@ function startChat(chatData) {
                   `
                 <div class="app__content--msg bot  textAndButtons">
                   <div class='in'>
-                  <div class="app__content--buttons">
+                  ${
+                    JSON.parse(item.body).body.text
+                      ? `<div class="app__content--buttons">
                     <p>${JSON.parse(item.body).body.text}</p>
-                  </div>
+                  </div>`
+                      : ""
+                  }
                       ${JSON.parse(item.body)
                         .body.buttons.map(
                           (item, index) =>
@@ -774,9 +906,7 @@ function startChat(chatData) {
                     type: "btn",
                   });
 
-                  $(this).parents('.textAndButtons').find('.buttons').hide()
-
-                  btnClick = true;
+                  $(this).parents(".textAndButtons").hide();
                 });
               }
 
@@ -796,7 +926,38 @@ function startChat(chatData) {
                 );
               }
             } else if (item.author === chatParams.userIdentity) {
-              if (item.attributes.type == "button") {
+              // media
+              if (item.type == "media") {
+                webchat.appendHtml(
+                  chatContentBox,
+                  `
+                <div class="app__content--msg voiceMsgUser user">
+                <div class='in'>
+                  <div id=${item.sid}>
+                 
+                  </div>
+                </div>
+                </div>
+              `
+                );
+
+                item.media.getContentTemporaryUrl().then((data) => {
+                  $(`#${item.sid}`).html(`
+                      <div id=${item.sid + "app"} class='audioAppBoxBot'>
+                        <audio>
+                            <source src=${data} type="audio/wav">
+                        </audio>
+                      </div>
+                    `);
+
+                  new GreenAudioPlayer("#" + item.sid + "app");
+
+                  chatContentBox.scrollTo({
+                    behavior: "smooth",
+                    top: chatContentBox.scrollHeight,
+                  });
+                });
+              } else if (item.attributes.type == "button") {
                 webchat.appendHtml(
                   chatContentBox,
                   `
@@ -808,16 +969,29 @@ function startChat(chatData) {
               `
                 );
               } else {
-                webchat.appendHtml(
-                  chatContentBox,
-                  `
-                <div class="app__content--msg user newMessages">
-                <div class='in'>
-                  ${item.body}
+                if (item.attributes.hiddenLike != true) {
+                  webchat.appendHtml(
+                    chatContentBox,
+                    `
+                  <div class="app__content--msg user newMessages">
+                  <div class='in'>
+                    ${item.body}
+                    </div>
                   </div>
-                </div>
-              `
-                );
+                `
+                  );
+                } else {
+                  webchat.appendHtml(
+                    chatContentBox,
+                    `
+                  <div class="app__content--msg user newMessages">
+                  <div class='in'>
+                  ${item.attributes.btn}
+                    </div>
+                  </div>
+                `
+                  );
+                }
               }
             } else {
               webchat.appendHtml(

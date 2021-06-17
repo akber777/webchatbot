@@ -1,7 +1,40 @@
+//By: Akber Akhmedzadeh
+
+// git:https://github.com/akber777
+
 .app {
   position: absolute;
   bottom: 20px;
   right: 20px;
+
+  &__Like {
+    display: flex;
+
+    .in {
+      display: flex !important;
+      flex-direction: column;
+    }
+
+    button {
+      width: calc(50% - 8px);
+      background: #e8f4ff;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      height: 52px;
+
+      &:not(:last-child) {
+        margin-right: 8px;
+      }
+
+      &:hover {
+        border: 2px solid #1089ff;
+      }
+
+      // &.unlikeBtnxk {
+      //   transform: rotateX(180deg);
+      // }
+    }
+  }
 
   &__rangeSlider {
     display: block;
@@ -81,6 +114,7 @@
       height: 180px;
       border-top-right-radius: 16px;
       border-top-left-radius: 16px;
+      border: none;
     }
 
     .app__sliderBox--info {
@@ -206,12 +240,17 @@
     border-top: 1px solid #e8f4ff;
     padding-top: 16px;
 
+    form {
+      display: flex;
+      width: 100%;
+    }
+
     p {
       position: relative;
       margin-bottom: 0;
 
       &:first-child {
-        width: 90%;
+        width: auto;
         display: inline-flex;
         align-items: center;
       }
@@ -243,7 +282,7 @@
   &__container {
     opacity: 0;
     width: 372px;
-    height: 671px;
+    height: 692px;
     border-radius: 20px;
     box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.2);
     margin-bottom: 15px;
@@ -311,6 +350,8 @@
     height: 100%;
     top: 0;
     background: #fff;
+    border-top-right-radius: 21px;
+    border-bottom-right-radius: 21px;
   }
 
   &__closeBtn {
@@ -425,9 +466,9 @@
       &.buttons {
         margin-bottom: 0 !important;
 
-        &:last-child {
-          margin-bottom: 15px !important;
-        }
+        // &:last-child {
+        //   margin-bottom: 15px !important;
+        // }
 
         .in {
           display: flex;
@@ -437,6 +478,10 @@
           padding: 0 !important;
         }
       }
+
+      //By: Akber Akhmedzadeh
+
+      // git:https://github.com/akber777
 
       .btnChat {
         border: none;
@@ -590,6 +635,7 @@
       &.user {
         display: flex;
         justify-content: flex-end;
+        margin-bottom: 2px !important;
 
         .in {
           font-style: normal;
@@ -613,6 +659,36 @@
       }
     }
   }
+
+  &__btnPowered {
+    display: flex;
+    align-items: center !important;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 10px;
+    padding: 0 19px;
+
+    a {
+      display: flex;
+      align-items: center;
+      text-decoration: none !important;
+    }
+
+    p {
+      margin-bottom: 0;
+    }
+
+    span {
+      margin-right: 5px;
+      font-size: 10px;
+      line-height: 22px;
+      color: rgba(30, 47, 66, 0.3);
+    }
+  }
+
+  //By: Akber Akhmedzadeh
+
+  // git:https://github.com/akber777
 
   .scrollable.default-skin .scroll-bar .thumb {
     background-color: transparent;

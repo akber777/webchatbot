@@ -21,6 +21,20 @@ scriptRangeSLider.src =
 
 document.querySelector("head").appendChild(scriptRangeSLider);
 
+// recorer js
+const scriptRecorder = document.createElement("script");
+scriptRecorder.src =
+  "https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js";
+
+document.querySelector("head").appendChild(scriptRecorder);
+
+// audio js
+const scriptAudio = document.createElement("script");
+scriptAudio.src =
+  "https://res.cloudinary.com/gocreative/raw/upload/v1623964834/audioplayer_p5amro.js";
+
+// document.querySelector("head").appendChild(scriptAudio);
+
 // input mask
 // const inputMask = document.createElement("script");
 // inputMask.src =

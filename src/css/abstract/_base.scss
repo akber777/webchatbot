@@ -38,8 +38,20 @@
 }
 
 .disabledMulti {
+  .in {
+    display: none !important;
+  }
+
   label {
     color: #8a94a6 !important;
+  }
+
+  .likeBtnxk {
+    display: none;
+  }
+
+  .unlikeBtnxk {
+    display: none;
   }
 
   .rangeIn {
@@ -62,7 +74,23 @@
     }
 
     .btnChat {
-      border: 1px solid #d6d4d4 !important;
+      background-color: #ffffff !important;
+      color: #0098d7;
+      text-align: center;
+      border-radius: 4px;
+      line-height: 30px;
+      display: block;
+      float: left;
+      margin-left: 0;
+      margin-right: 4px;
+      padding-left: 10px;
+      padding-right: 10px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      font-size: 13px;
+      border: 1px solid #0098d7 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
 
       &:hover {
         transition: all 0.2s;
@@ -80,4 +108,149 @@
   width: 21px !important;
   cursor: pointer;
   z-index: 5;
+}
+
+.disabledSend {
+  svg {
+    path {
+      stroke: #8a94a6;
+    }
+  }
+}
+
+#multifghjx {
+  width: 90%;
+  display: inline-flex;
+  align-items: center;
+  padding-left: 5px;
+
+  audio {
+    width: 93%;
+    height: 20px;
+  }
+}
+
+#stopButton {
+  display: none;
+}
+
+.removeRecordSvg {
+  svg {
+    g {
+      opacity: 1;
+    }
+    path {
+      fill: #d16464;
+    }
+  }
+}
+
+.showFileInput {
+  display: block !important;
+}
+
+.audioAppBoxBot {
+  padding: 0;
+  width: 278px !important;
+  min-width: auto !important;
+  height: 24px;
+  background-color: transparent;
+  box-shadow: unset !important;
+
+  .controls__slide {
+    background-color: #fff !important;
+  }
+
+  .progress__pin {
+    background-color: #fff !important;
+    width: 12px !important;
+    height: 12px !important;
+    top: -4px !important;
+  }
+
+  .loading__spinner {
+    border: 2px solid #fff !important;
+    border-right-color: transparent !important;
+  }
+
+  .volume {
+    display: none;
+  }
+
+  .controls__progress {
+    background-color: #fff !important;
+  }
+
+  .play-pause-btn {
+    border-radius: 100%;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #fff;
+    visibility: visible;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 1px;
+
+    svg {
+      width: 6px;
+      height: 6px;
+      margin-left: -2px;
+      path {
+        fill: #fff;
+      }
+    }
+  }
+}
+
+.audioAppBoxBotRecorder {
+  background: #e8f4ff;
+  min-width: auto;
+  width: 95% !important;
+  padding: 0 8px;
+  height: 32px;
+  padding-right: 0;
+  border-radius: 6px;
+
+  .controls__current-time {
+    display: none !important;
+  }
+
+  .controls {
+    margin-left: 0;
+  }
+
+  .controls__total-time {
+    color: #1089ff;
+  }
+
+  .progress__pin {
+    background-color: #1089ff !important;
+    width: 12px !important;
+    height: 12px !important;
+    top: -4px !important;
+  }
+
+  .controls__progress {
+    background-color: #1089ff !important;
+  }
+
+  .controls__slider {
+    background-color: #1089ff;
+  }
+
+  .play-pause-btn {
+    border: 1.5px solid #1089ff;
+    width: 18px;
+    height: 18px;
+
+    svg {
+      width: 6px;
+      height: 6px;
+      margin-left: -2px;
+      path {
+        fill: #1089ff;
+      }
+    }
+  }
 }

@@ -47,6 +47,22 @@ document.querySelector(".app__content").onscroll = function () {
                   );
                 }
 
+                // like
+                else if (JSON.parse(item.body).type == "like") {
+                  webchat.prependHtml(
+                    chatContentBox,
+                    `
+                    <div  class="app__content--msg bot multipleSelection app__Like">
+                      <div class='in'>
+                        <div class="app__multipleTitle">
+                          ${JSON.parse(item.body).body.text}
+                        </div>
+                      </div>
+                    </div>
+                    `
+                  );
+                }
+
                 // rangeSlider
                 else if (JSON.parse(item.body).type == "rangeSlider") {
                   webchat.prependHtml(
@@ -101,7 +117,7 @@ document.querySelector(".app__content").onscroll = function () {
                   webchat.prependHtml(
                     chatContentBox,
                     `
-                          <div class='app__sliderBox app__imageContainer'>
+                          <div class='app__content--msg app__sliderBox app__imageContainer'>
                             <img src=${JSON.parse(item.body).body.url} />
                           <div class="app__sliderBox--info">
                             <p>${JSON.parse(item.body).body.text}</p>
@@ -130,45 +146,6 @@ document.querySelector(".app__content").onscroll = function () {
                   });
                 }
 
-                // video
-                else if (JSON.parse(item.body).type == "video") {
-                  webchat.prependHtml(
-                    chatContentBox,
-                    `
-                        <div class='app__sliderBox app__videoBox'>
-                        <iframe
-                            src=https://www.youtube.com/embed/${
-                              JSON.parse(item.body).body.url.split("?v=")[1]
-                            }>
-                            </iframe>
-                        <div class="app__sliderBox--info">
-                          <p>${JSON.parse(item.body).body.text}</p>
-                          <a target="_blank" href=${
-                            JSON.parse(item.body).body.url
-                          }>
-                            ${JSON.parse(item.body).body.url}
-                          </a>
-                          ${JSON.parse(item.body)
-                            .body.buttons.map(
-                              (btnBox) =>
-                                `
-                              <div class="app__sliderBox--buttons videoBoxContainer">
-                                ${webchat.checkedUrl(btnBox)}
-                              </div>
-                              `
-                            )
-                            .join(" ")}
-                        </div>
-                        </div>
-
-                    `
-                  );
-
-                  $(".videoBoxContainer button").on("click", function () {
-                    conversation.sendMessage($(this).text().trim());
-                  });
-                }
-
                 // multiple selection
                 else if (JSON.parse(item.body).type == "multipleSelection") {
                   webchat.prependHtml(
@@ -184,44 +161,18 @@ document.querySelector(".app__content").onscroll = function () {
                             .body.options.map(
                               (item) => `<div>
                               <label for=${item}>
-                              <input id=${item} type="checkbox" />
+                              <input disabled id=${item} type="checkbox" />
                               ${item}
                               </label>
                             </div>`
                             )
                             .join("")}
                         </div>
-                        <div class="app__multipleConfirm">
-                              <button>
-                                Confirm
-                              </button>
-                        </div>
                       </div>
 
                     </div>
                     `
                   );
-
-                  $(".app__multipleItems label").on("click", function () {
-                    if ($(this).find("input").is(":checked") === true) {
-                      if (
-                        multipleSelection.includes($(this).text().trim()) ===
-                        false
-                      ) {
-                        multipleSelection.push($(this).text().trim());
-                      }
-                    } else {
-                      multipleSelection = multipleSelection.filter(
-                        (e) => e !== $(this).text().trim()
-                      );
-                    }
-                  });
-
-                  $(".app__multipleConfirm button").on("click", function () {
-                    if (multipleSelection.length !== 0) {
-                      conversation.sendMessage(multipleSelection.toString());
-                    }
-                  });
                 } else if (JSON.parse(item.body).type == "carousel") {
                   webchat.prependHtml(
                     chatContentBox,
@@ -309,6 +260,44 @@ document.querySelector(".app__content").onscroll = function () {
                     `
                   );
                 }
+                // video
+                else if (JSON.parse(item.body).type == "video") {
+                  webchat.prependHtml(
+                    chatContentBox,
+                    `
+                          <div class='app__content--msg app__sliderBox app__videoBox'>
+                          <iframe
+                              src=https://www.youtube.com/embed/${
+                                JSON.parse(item.body).body.url.split("?v=")[1]
+                              }>
+                              </iframe>
+                          <div class="app__sliderBox--info">
+                            <p>${JSON.parse(item.body).body.text}</p>
+                            <a target="_blank" href=${
+                              JSON.parse(item.body).body.url
+                            }>
+                              ${JSON.parse(item.body).body.url}
+                            </a>
+                            ${JSON.parse(item.body)
+                              .body.buttons.map(
+                                (btnBox) =>
+                                  `
+                                <div class="app__sliderBox--buttons videoBoxContainer">
+                                  ${webchat.checkedUrl(btnBox)}
+                                </div>
+                                `
+                              )
+                              .join(" ")}
+                          </div>
+                          </div>
+  
+                      `
+                  );
+
+                  $(".videoBoxContainer button").on("click", function () {
+                    conversation.sendMessage($(this).text().trim());
+                  });
+                }
 
                 if (JSON.parse(item.body).type == "textAndButtons") {
                   webchat.prependHtml(
@@ -323,7 +312,38 @@ document.querySelector(".app__content").onscroll = function () {
                   );
                 }
               } else if (item.author === chatParams.userIdentity) {
-                if (item.attributes.type == "button") {
+                // media
+                if (item.type == "media") {
+                  webchat.prependHtml(
+                    chatContentBox,
+                    `
+                  <div class="app__content--msg voiceMsgUser user">
+                  <div class='in'>
+                    <div id=${item.sid}>
+                   
+                    </div>
+                  </div>
+                  </div>
+                `
+                  );
+
+                  item.media.getContentTemporaryUrl().then((data) => {
+                    $(`#${item.sid}`).html(`
+                        <div id=${item.sid + "app"} class='audioAppBoxBot'>
+                          <audio>
+                              <source src=${data} type="audio/wav">
+                          </audio>
+                        </div>
+                      `);
+
+                    new GreenAudioPlayer("#" + item.sid + "app");
+
+                    chatContentBox.scrollTo({
+                      behavior: "smooth",
+                      top: chatContentBox.scrollHeight,
+                    });
+                  });
+                } else if (item.attributes.type == "button") {
                   webchat.prependHtml(
                     chatContentBox,
                     `
@@ -335,16 +355,29 @@ document.querySelector(".app__content").onscroll = function () {
                 `
                   );
                 } else {
-                  webchat.prependHtml(
-                    chatContentBox,
-                    `
-                  <div class="app__content--msg user newMessages">
-                  <div class='in'>
-                    ${item.body}
+                  if (item.attributes.hiddenLike != true) {
+                    webchat.prependHtml(
+                      chatContentBox,
+                      `
+                    <div class="app__content--msg user newMessages">
+                    <div class='in'>
+                      ${item.body}
+                      </div>
                     </div>
-                  </div>
-                `
-                  );
+                  `
+                    );
+                  } else {
+                    webchat.prependHtml(
+                      chatContentBox,
+                      `
+                    <div class="app__content--msg user newMessages">
+                    <div class='in'>
+                    ${item.attributes.btn}
+                      </div>
+                    </div>
+                  `
+                    );
+                  }
                 }
               } else {
                 webchat.prependHtml(
